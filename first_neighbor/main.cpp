@@ -20,7 +20,8 @@ vector<int> initializer(int N)
     vector<int> lattice (N, 0);
     for (int i = 0; i < N; i++)
     {
-        lattice[i] = (rand()%2 ? 1: -1);
+        //lattice[i] = (rand()%2 ? 1: -1);
+        lattice[i] = 1;
     }
     
     return lattice;
@@ -79,9 +80,9 @@ double magnetization(const vector<int> &lattice) {
 double energy(const vector<int>& lattice) {
     double energy = 0.0;
     for (size_t n = 0; n < lattice.size(); n++) {
-        energy += hamiltonian(n, lattice);
+        energy += lattice[n]*lattice[(n+1) % lattice.size()];
     }
-    return (energy / lattice.size()) ;
+    return (-energy / lattice.size()) ;
 }
 
 
@@ -119,7 +120,7 @@ void writeVectorsToCSV(const vector<double>& temp, const vector<double>& Mag, co
 int main()
 {
     srand(time(NULL));
-    const int N = 256;
+    const int N = 64;
     const int nens = 50;
     const double minTemp = 0.01;
     const double maxTemp = 20.0;
@@ -140,16 +141,15 @@ int main()
         static const vector<double> expTable = {1.0, exp(-4.0 / temp[t]), exp(-8.0 / temp[t]), exp(-12.0 / temp[t])};
         double avgE = 0.0;
         double avgM = 0.0;
-
         for (int ens = 0; ens < nens; ens++) {
             vector<int> lattice = initializer(N);
+            for (int i = 0; i < pow(N,2); i++) {
 
-            for (int i = 0; i < pow(N,3); i++) {
+                int pos = (rand() % (N-1));
+                double dE = -2*hamiltonian(pos, lattice);
 
-                int pos = (rand() % N);
-                double dE = -2 * hamiltonian(pos, lattice);
+                check_flip(dE, pos, lattice, expTable[abs(-dE / 4)]);
 
-                check_flip(dE, pos, lattice, expTable[-dE / 4]);
             }
 
             double E = energy(lattice);

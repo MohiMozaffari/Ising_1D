@@ -36,8 +36,8 @@ vector<int> initializer(int N)
  */
 double hamiltonian(int n, const vector<int>& lattice) {
     int N = lattice.size();
-    double E = -lattice[n] * (lattice[(n + 1) % N] + lattice[(n - 1 + N) % N]);
-    E -= lattice[n] * (lattice[(n + 2) % N] + lattice[(n - 2 + N) % N]);
+    double E = lattice[n] * (lattice[(n + 1) % N] + lattice[(n - 1 + N) % N]);
+    E += lattice[n] * (lattice[(n + 2) % N] + lattice[(n - 2 + N) % N]);
     return E;
 }
 
@@ -121,7 +121,7 @@ void writeVectorsToCSV(const vector<double>& temp, const vector<double>& Mag, co
 int main()
 {
     srand(time(NULL));
-    const int N = 256;
+    const int N = 64;
     const int nens = 50;
     const double minTemp = 0.01;
     const double maxTemp = 20.0;
